@@ -10,6 +10,13 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
+# Install required dependencies for Docker CLI
+RUN apk add --no-cache \
+    docker-cli \
+    curl \
+    bash \
+    git
+
 # Copy the application code into the container
 COPY . .
 

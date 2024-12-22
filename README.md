@@ -56,8 +56,10 @@ node --env-file=.env.development src/cli/index.js wrap -s scripts/word_reverser.
 ```
 
 ### Dockerized Usage
-Build the image for the desired environment:
+Build the image for development environment: 
+
+(you can change the env_file: on the  docker-compose.yml to point to your desired .env file)
 ```bash
 ENV=development docker-compose build
-docker-compose run cli wrap -s examples/word_reverser.py -e "python word_reverser.py 'hello world'"
+docker-compose run cli wrap -s ../scripts/word_reverser.py -e "python word_reverser.py 'hello world'"
 ```

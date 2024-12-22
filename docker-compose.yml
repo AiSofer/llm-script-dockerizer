@@ -9,5 +9,7 @@ services:
     volumes:
       - .:/usr/src/app # Mount code for development (optional)
       - /usr/src/app/node_modules # Avoid overwriting node_modules
+    env_file:
+      - .env.development
     working_dir: /usr/src/app/src
     entrypoint: ["node", "cli/index.js"]
