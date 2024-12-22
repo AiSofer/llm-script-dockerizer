@@ -9,7 +9,8 @@ npm-debug.log*
 # Environment variables
 .env
 .env.* 
-!.env.example  # Exception for .env.example to demonstrate for JIT
+# Exception for .env.example to demonstrate for JIT
+!.env.example  
 
 # artifacts
 *.tar
