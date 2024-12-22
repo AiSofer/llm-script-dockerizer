@@ -1,48 +1,57 @@
-const axios = require('axios');
+const OpenAI = require("openai");
 
 class OpenAIAdapter {
-    constructor() {
+    constructor(config = {}) {
         if (!process.env.OPENAI_API_KEY) {
             throw new Error('OPENAI_API_KEY must be set for OpenAI integration.');
         }
+        // Configure the OpenAI API client
         this.apiKey = process.env.OPENAI_API_KEY;
-        this.apiUrl = 'https://api.openai.com/v1/completions';
+        this.openai = new OpenAI({ apiKey });
+
+        // Default options for requests
+        this.defaultOptions = {
+            model: config.model || "gpt-4o",
+            temperature: config.temperature || 0.7,
+            max_tokens: config.maxTokens || 512,
+        };
     }
+    /**
+     * Sends a prompt that will generate a dockerfile to the OpenAI API.
+     * @param {string} prompt - The prompt string to send.
+     * @param {Object} [options] - Override options for the API call.
+     * @returns {Promise<string>} - The response text from OpenAI.
+     */
+    async generateDockerfile(script, path, options = {}) {
+        if (!script) {
+            throw new Error("script is required.");
+        }
+        const prompt = `
+        Generate a Dockerfile that containerizes the following script and considering it's following path.
+        The scripts could be any one-pager script in any scripting language.
+        The CMD should consider the considering it's following path as well.
+        Output ONLY the Dockerfile, without any additional explanations or comments.
+        Path:
+        ${path}
+        Script:
+        ${script}
+        `;
+        options = {messages: [{"role": "user", "content": prompt}]};
+        const requestOptions = { ...this.defaultOptions, ...options };
 
-    async generateDockerfile(script) {
         try {
-            const prompt = `
-Generate a Dockerfile that containerizes the following script.
-The scripts could be any one-pager script in any scripting language.
-The Dockerfile should run the script as the container's main process.
-Output ONLY the Dockerfile, without any additional explanations or comments.
-Path:
-${path}
-Script:
-${script}
-`;
-
-            const response = await axios.post(
-                this.apiUrl,
-                {
-                    model: 'GPT-4o',
-                    prompt,
-                    max_tokens: 300,
-                },
-                {
-                    headers: { Authorization: `Bearer ${this.apiKey}` },
-                    timeout: 10000,
-                }
-            );
-
-            if (response.status !== 200 || !response.data.choices) {
-                throw new Error('Invalid response from OpenAI API.');
+            const response = await this.openai.chat.completions.create(requestOptions);
+            if (response?.choices?.[0]?.message) {
+                //TODO this is common for hf as well, export it to utils
+                const str = response.choices[0].message.content.trim();
+                const out = str.substring(str.indexOf("FROM"), str.length-3);
+                return out;
+            } else {
+                throw new Error("No valid response from OpenAI API.");
             }
-
-            return response.data.choices[0].text.trim();
         } catch (error) {
-            console.error('OpenAI error:', error.message);
-            throw new Error('Failed to generate Dockerfile using OpenAI.');
+            console.error("Error communicating with OpenAI API:", error.message);
+            throw error;
         }
     }
 }

@@ -36,7 +36,7 @@ ${script}
             if (response.status !== 200 || !response.data) {
                 throw new Error('Invalid response from Hugging Face API.');
             }
-            
+            //TODO this is common for hf as well, export it to utils
             const str = response.data[0].generated_text.trim();
             const out = str.substring(str.indexOf("FROM"), str.length-3);
             
