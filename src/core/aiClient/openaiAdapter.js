@@ -1,5 +1,9 @@
 const OpenAI = require("openai");
-const { dockerfileExtraction } = require("../../utils/helpers");
+const { dockerfileExtraction, estimateTokens } = require("../../utils/helpers");
+const RateLimiter = require('../ratelimiter');
+
+// Initialize the rate limiter
+const rateLimiter = new RateLimiter(process.env.BUDGET || 5.0);
 
 class OpenAIAdapter {
     constructor(config = {}) {
@@ -37,12 +41,20 @@ class OpenAIAdapter {
         Script:
         ${script}
         `;
+        const tokenEstimation = estimateTokens(prompt); // Estimated token usage
+        if (!rateLimiter.canMakeRequest(tokenEstimation)) {
+            throw new Error('Rate limit exceeded. Remaining budget insufficient for this request.');
+        }
         options = {messages: [{"role": "user", "content": prompt}]};
         const requestOptions = { ...this.defaultOptions, ...options };
 
         try {
             const response = await this.openai.chat.completions.create(requestOptions);
             if (response?.choices?.[0]?.message) {
+                const tokensUsed = estimateTokens(response.choices[0].message.content); // Actual tokens used
+                rateLimiter.recordUsage(tokensUsed);
+    
+                console.debug('Token usage:', rateLimiter.getUsage());
                 const dockerFile = dockerfileExtraction(response.choices[0].message.content.trim());
                 return dockerFile;
             } else {

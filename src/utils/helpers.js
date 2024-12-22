@@ -8,4 +8,9 @@ function dockerfileExtraction(input) {
     return input.substring(input.indexOf("FROM"), input.length-3);
 }
 
-module.exports = { sanitizeInput, dockerfileExtraction };
+// Estimate tokens based on the length of the text
+function estimateTokens(text) {
+    return Math.ceil(text.length / 4); // Approximation: 1 token ≈ 4 characters
+}
+
+module.exports = { sanitizeInput, dockerfileExtraction, estimateTokens };
