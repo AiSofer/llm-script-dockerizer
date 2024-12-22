@@ -1,0 +1,41 @@
+{
+  "name": "llm-script-dockerizer",
+  "version": "1.0.0",
+  "description": "A command-line tool designed to wrap scripts in Dockerfiles using a generative AI model.",
+  "main": "src/cli/index.js",
+  "bin": {
+    "lsd-cli": ".src/cli/index.js"
+  },
+  "scripts": {
+    "start": "node src/cli/index.js",
+    "test": "jest",
+    "lint": "eslint .",
+    "build": "docker build -t lsd-cli ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AiSofer/llm-script-dockerizer.git"
+  },
+  "keywords": [
+    "isofer.io",
+    "isofer"
+  ],
+  "author": "Idan Sofer @AiSofer",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.4.0",
+    "commander": "^10.0.0",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.48.0",
+    "jest": "^29.7.0"
+  },
+  "bugs": {
+    "url": "https://github.com/AiSofer/llm-script-dockerizer/issues"
+  },
+  "homepage": "https://github.com/AiSofer/llm-script-dockerizer#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

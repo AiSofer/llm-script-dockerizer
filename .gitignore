@@ -1,0 +1,38 @@
+# Node.js dependencies
+node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Environment variables
+.env
+.env.* 
+!.env.example  # Exception for .env.example to demonstrate for JIT
+
+# artifacts
+*.tar
+*.gz
+
+# TypeScript build outputs (if applicable)
+dist/
+build/
+*.tsbuildinfo
+
+# IDE and editor specific files
+.vscode/
+.idea/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Coverage and test files
+coverage/
+*.lcov
+
+# npm package-lock files (optional, if you are using Yarn instead)
+package-lock.json
+yarn.lock
+
