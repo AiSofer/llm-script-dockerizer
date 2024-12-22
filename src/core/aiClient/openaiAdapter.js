@@ -1,4 +1,5 @@
 const OpenAI = require("openai");
+const { dockerfileExtraction } = require("../../utils/helpers");
 
 class OpenAIAdapter {
     constructor(config = {}) {
@@ -7,7 +8,7 @@ class OpenAIAdapter {
         }
         // Configure the OpenAI API client
         this.apiKey = process.env.OPENAI_API_KEY;
-        this.openai = new OpenAI({ apiKey });
+        this.openai = new OpenAI({ apiKey:this.apiKey });
 
         // Default options for requests
         this.defaultOptions = {
@@ -42,10 +43,8 @@ class OpenAIAdapter {
         try {
             const response = await this.openai.chat.completions.create(requestOptions);
             if (response?.choices?.[0]?.message) {
-                //TODO this is common for hf as well, export it to utils
-                const str = response.choices[0].message.content.trim();
-                const out = str.substring(str.indexOf("FROM"), str.length-3);
-                return out;
+                const dockerFile = dockerfileExtraction(response.choices[0].message.content.trim());
+                return dockerFile;
             } else {
                 throw new Error("No valid response from OpenAI API.");
             }

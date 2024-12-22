@@ -1,4 +1,5 @@
 const axios = require('axios');
+const { dockerfileExtraction } = require("../../utils/helpers");
 
 class HuggingFaceAdapter {
     constructor() {
@@ -36,11 +37,12 @@ ${script}
             if (response.status !== 200 || !response.data) {
                 throw new Error('Invalid response from Hugging Face API.');
             }
-            //TODO this is common for hf as well, export it to utils
-            const str = response.data[0].generated_text.trim();
-            const out = str.substring(str.indexOf("FROM"), str.length-3);
-            
-            return out;
+            if (response?.data?.[0]?.generated_text) {
+                const dockerFile = dockerfileExtraction(response.data[0].generated_text.trim());
+                return dockerFile;
+            } else {
+                throw new Error("No valid response from OpenAI API.");
+            }
         } catch (error) {
             console.error('Hugging Face error:', error.message);
             throw new Error('Failed to generate Dockerfile using Hugging Face.');
