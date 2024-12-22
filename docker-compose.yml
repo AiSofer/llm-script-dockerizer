@@ -1,0 +1,13 @@
+version: "3.9"
+services:
+  cli:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        ENV: ${ENV:-development} # Use the ENV variable or default to development
+    volumes:
+      - .:/usr/src/app # Mount code for development (optional)
+      - /usr/src/app/node_modules # Avoid overwriting node_modules
+    working_dir: /usr/src/app/src
+    entrypoint: ["node", "cli/index.js"]
