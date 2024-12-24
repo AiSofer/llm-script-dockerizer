@@ -4,7 +4,7 @@
   "description": "A command-line tool designed to wrap scripts in Dockerfiles using a generative AI model.",
   "main": "src/cli/index.js",
   "bin": {
-    "lsd-cli": ".src/cli/index.js"
+    "lsd-cli": "./src/cli/index.js"
   },
   "scripts": {
     "start": "node src/cli/index.js",
